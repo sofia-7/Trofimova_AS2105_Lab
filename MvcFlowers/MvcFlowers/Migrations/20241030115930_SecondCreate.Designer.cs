@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MvcFlowers.Data;
 
@@ -11,9 +12,11 @@ using MvcFlowers.Data;
 namespace MvcFlowers.Migrations
 {
     [DbContext(typeof(MvcFlowersContext))]
-    partial class MvcFlowersContextModelSnapshot : ModelSnapshot
+    [Migration("20241030115930_SecondCreate")]
+    partial class SecondCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -32,9 +35,6 @@ namespace MvcFlowers.Migrations
 
                     b.Property<int>("Amount")
                         .HasColumnType("int");
-
-                    b.Property<string>("Colour")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreationtDate")
                         .HasColumnType("datetime2");
@@ -75,35 +75,6 @@ namespace MvcFlowers.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("MonoFlowers");
-                });
-
-            modelBuilder.Entity("MvcFlowers.Models.PottedFlowers", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Lightning")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime>("RecievementDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<float?>("Temperature")
-                        .HasColumnType("real");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("PottedFlowers");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,10 +1,10 @@
-﻿@model IEnumerable<MvcFlowers.Models.MonoFlowers>
+﻿@model IEnumerable<MvcFlowers.Models.Bouqets>
 
 @{
-    ViewData["Title"] = "Mono Flowers";
+    ViewData["Title"] = "Bouqets";
 }
 
-<h1>MonoFlowers</h1>
+<h1>Bouqets</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -13,13 +13,16 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Name)
+                @Html.DisplayNameFor(model => model.Amount)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.RecievementDate)
+                @Html.DisplayNameFor(model => model.CreationtDate)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Price)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Flower_type)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Colour)
@@ -31,13 +34,16 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Name)
+                @Html.DisplayFor(modelItem => item.Amount)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.RecievementDate)
+                @Html.DisplayFor(modelItem => item.CreationtDate)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Price)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Flower_type)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Colour)

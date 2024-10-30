@@ -1,10 +1,10 @@
-﻿@model IEnumerable<MvcFlowers.Models.MonoFlowers>
+﻿@model IEnumerable<MvcFlowers.Models.PottedFlowers>
 
 @{
-    ViewData["Title"] = "Mono Flowers";
+    ViewData["Title"] = "Potted Flowers";
 }
 
-<h1>MonoFlowers</h1>
+<h1>Potted Flowers</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -22,7 +22,10 @@
                 @Html.DisplayNameFor(model => model.Price)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Colour)
+                @Html.DisplayNameFor(model => model.Temperature)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Lightning)
             </th>
             <th></th>
         </tr>
@@ -40,7 +43,10 @@
                 @Html.DisplayFor(modelItem => item.Price)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Colour)
+                @Html.DisplayFor(modelItem => item.Temperature)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Lightning)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
