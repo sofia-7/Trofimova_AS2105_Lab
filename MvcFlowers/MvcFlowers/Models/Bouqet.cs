@@ -9,8 +9,18 @@ namespace MvcFlowers.Models
 {
     public class Bouqet
     {
-        public int Id { get; set; }
+        [Key]
+        public int BouqetId { get; set; }
         public List<MonoFlowers> Flowers { get; set; } = new List<MonoFlowers>();
+
+        // Новое свойство для хранения идентификаторов цветов
+        public List<int> SelectedFlowerIds { get; set; } = new List<int>();
+
+        public Bouqet()
+        {
+            SelectedFlowerIds = new List<int>();
+            Flowers = new List<MonoFlowers>(); // Инициализация коллекции
+        }
 
         // Метод для подсчета стоимости букета
         public decimal CalculateTotalPrice()

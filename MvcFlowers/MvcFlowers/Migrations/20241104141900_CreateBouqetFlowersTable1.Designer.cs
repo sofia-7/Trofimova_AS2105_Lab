@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MvcFlowers.Data;
 
@@ -11,9 +12,11 @@ using MvcFlowers.Data;
 namespace MvcFlowers.Migrations
 {
     [DbContext(typeof(MvcFlowersContext))]
-    partial class MvcFlowersContextModelSnapshot : ModelSnapshot
+    [Migration("20241104141900_CreateBouqetFlowersTable1")]
+    partial class CreateBouqetFlowersTable1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -39,17 +42,17 @@ namespace MvcFlowers.Migrations
 
             modelBuilder.Entity("MvcFlowers.Models.Bouqet", b =>
                 {
-                    b.Property<int>("BouqetId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BouqetId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("SelectedFlowerIds")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("BouqetId");
+                    b.HasKey("Id");
 
                     b.ToTable("Bouqet");
                 });
@@ -85,11 +88,11 @@ namespace MvcFlowers.Migrations
 
             modelBuilder.Entity("MvcFlowers.Models.MonoFlowers", b =>
                 {
-                    b.Property<int>("MonoFlowerId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MonoFlowerId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Colour")
                         .HasColumnType("nvarchar(max)");
@@ -104,7 +107,7 @@ namespace MvcFlowers.Migrations
                     b.Property<DateTime>("RecievementDate")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("MonoFlowerId");
+                    b.HasKey("Id");
 
                     b.ToTable("MonoFlowers");
                 });

@@ -18,5 +18,33 @@ namespace MvcFlowers.Data
         public DbSet<MvcFlowers.Models.Bouqets> Bouqets { get; set; } = default!;
         public DbSet<MvcFlowers.Models.PottedFlowers> PottedFlowers { get; set; } = default!;
         public DbSet<MvcFlowers.Models.Bouqet> Bouqet { get; set; } = default!;
+        public DbSet<MonoFlowers> Flowers { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+{
+        base.OnModelCreating(modelBuilder);
+
+        // Настройка отношения "многие ко многим" между Bouqet и MonoFlowers
+        modelBuilder.Entity<Bouqet>()
+            .HasMany(b => b.Flowers)
+            .WithMany()
+            .UsingEntity<Dictionary<string, object>>(
+                "BouqetFlowers", // Имя промежуточной таблицы
+                j => j
+                    .HasOne<MonoFlowers>()
+                    .WithMany()
+                    .HasForeignKey("MonoFlowerId")
+                    .OnDelete(DeleteBehavior.Cascade),
+                j => j
+                    .HasOne<Bouqet>()
+                    .WithMany()
+                    .HasForeignKey("BouqetId")
+                    .OnDelete(DeleteBehavior.Cascade),
+                j =>
+                {
+                    j.HasKey("BouqetId", "MonoFlowerId"); // Установка составного ключа
+                });
+}
+
     }
 }

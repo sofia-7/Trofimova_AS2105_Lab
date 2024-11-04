@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MvcFlowers.Data;
 
@@ -11,9 +12,11 @@ using MvcFlowers.Data;
 namespace MvcFlowers.Migrations
 {
     [DbContext(typeof(MvcFlowersContext))]
-    partial class MvcFlowersContextModelSnapshot : ModelSnapshot
+    [Migration("20241104140554_CreateBouqetFlowersTable")]
+    partial class CreateBouqetFlowersTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -22,34 +25,34 @@ namespace MvcFlowers.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("BouqetFlowers", b =>
+            modelBuilder.Entity("BouqetMonoFlowers", b =>
                 {
                     b.Property<int>("BouqetId")
                         .HasColumnType("int");
 
-                    b.Property<int>("MonoFlowerId")
+                    b.Property<int>("FlowersId")
                         .HasColumnType("int");
 
-                    b.HasKey("BouqetId", "MonoFlowerId");
+                    b.HasKey("BouqetId", "FlowersId");
 
-                    b.HasIndex("MonoFlowerId");
+                    b.HasIndex("FlowersId");
 
-                    b.ToTable("BouqetFlowers");
+                    b.ToTable("BouqetFlowers", (string)null);
                 });
 
             modelBuilder.Entity("MvcFlowers.Models.Bouqet", b =>
                 {
-                    b.Property<int>("BouqetId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BouqetId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("SelectedFlowerIds")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("BouqetId");
+                    b.HasKey("Id");
 
                     b.ToTable("Bouqet");
                 });
@@ -85,26 +88,28 @@ namespace MvcFlowers.Migrations
 
             modelBuilder.Entity("MvcFlowers.Models.MonoFlowers", b =>
                 {
-                    b.Property<int>("MonoFlowerId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MonoFlowerId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Colour")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("RecievementDate")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("MonoFlowerId");
+                    b.HasKey("Id");
 
                     b.ToTable("MonoFlowers");
                 });
@@ -138,7 +143,7 @@ namespace MvcFlowers.Migrations
                     b.ToTable("PottedFlowers");
                 });
 
-            modelBuilder.Entity("BouqetFlowers", b =>
+            modelBuilder.Entity("BouqetMonoFlowers", b =>
                 {
                     b.HasOne("MvcFlowers.Models.Bouqet", null)
                         .WithMany()
@@ -148,7 +153,7 @@ namespace MvcFlowers.Migrations
 
                     b.HasOne("MvcFlowers.Models.MonoFlowers", null)
                         .WithMany()
-                        .HasForeignKey("MonoFlowerId")
+                        .HasForeignKey("FlowersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

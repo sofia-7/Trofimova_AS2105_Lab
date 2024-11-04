@@ -12,18 +12,37 @@
 <table class="table">
     <thead>
         <tr>
+            <th>Id</th>
+            <th>Цветы в букете</th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.BouqetId</td>
+                <td>
+                    <ul>
+                        @if (item.Flowers != null && item.Flowers.Any())
+                        {
+                            foreach (var flower in item.Flowers)
+                            {
+                                <li>@flower.DisplayName</li> <!-- Используем DisplayName для отображения имени цветка -->
+                            }
+                        }
+                        else
+                        {
+                            <li>Нет цветов</li> <!-- Сообщение, если цветов нет -->
+                        }
+                    </ul>
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.BouqetId">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.BouqetId">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.BouqetId">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

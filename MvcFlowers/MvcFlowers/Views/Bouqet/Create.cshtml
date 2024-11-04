@@ -1,28 +1,55 @@
 ﻿@model MvcFlowers.Models.Bouqet
 
-@{
-    ViewData["Title"] = "Create";
-}
+<form asp-action="Create">
+    <h3>Создание букета</h3>
+    <h4>Добавить цветы в букет</h4>
 
-<h1>Create</h1>
-
-<h4>Bouqet</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+    <div id="flowers">
+        <select id="flowerSelect">
+            <option value="">-- Выберите цветок --</option>
+            @foreach (var flower in ViewBag.AvailableFlowers)
+            {
+                <option value="@flower.Value">@flower.Text</option>
+            }
+        </select>
+        <button type="button" id="addFlowerButton">Добавить цветок</button>
     </div>
-</div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+    <h4>Добавленные цветы:</h4>
+    <ul id="flowerList"></ul> <!-- Список для отображения добавленных цветов -->
+    <!-- Скрытое поле для передачи идентификаторов выбранных цветов -->
+    <input type="hidden" asp-for="SelectedFlowerIds" id="SelectedFlowerIds" />
+
+    <button type="submit">Создать букет</button>
+</form>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        const flowerList = document.getElementById('flowerList');
+        const flowerSelect = document.getElementById('flowerSelect');
+        const selectedFlowerIdsInput = document.getElementById('SelectedFlowerIds');
+
+        document.getElementById('addFlowerButton').addEventListener('click', function () {
+            const selectedFlowerId = flowerSelect.value;
+            const selectedFlowerText = flowerSelect.options[flowerSelect.selectedIndex].text;
+
+            if (selectedFlowerId) {
+                // Создаем новый элемент списка для добавленного цветка
+                const listItem = document.createElement('li');
+                listItem.textContent = selectedFlowerText; // Отображаем имя выбранного цветка
+                flowerList.appendChild(listItem); // Добавляем элемент в список
+
+                // Обновляем скрытое поле с идентификаторами цветов
+                const currentIds = selectedFlowerIdsInput.value ? selectedFlowerIdsInput.value.split(',') : [];
+                if (!currentIds.includes(selectedFlowerId)) {
+                    currentIds.push(selectedFlowerId);
+                    selectedFlowerIdsInput.value = currentIds.join(',');
+                }
+
+                console.log("Добавленный цветок ID: " + selectedFlowerId);
+            } else {
+                alert("Пожалуйста, выберите цветок.");
+            }
+        });
+    </script>
 }

@@ -34,7 +34,7 @@ namespace MvcFlowers.Controllers
             }
 
             var monoFlowers = await _context.MonoFlowers
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.MonoFlowerId == id);
             if (monoFlowers == null)
             {
                 return NotFound();
@@ -54,7 +54,7 @@ namespace MvcFlowers.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,RecievementDate,Price,Colour")] MonoFlowers monoFlowers)
+        public async Task<IActionResult> Create([Bind("MonoFlowerId,Name,RecievementDate,Price,Colour")] MonoFlowers monoFlowers)
         {
             if (ModelState.IsValid)
             {
@@ -86,9 +86,9 @@ namespace MvcFlowers.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,RecievementDate,Price,Colour")] MonoFlowers monoFlowers)
+        public async Task<IActionResult> Edit(int id, [Bind("MonoFlowerId,Name,RecievementDate,Price,Colour")] MonoFlowers monoFlowers)
         {
-            if (id != monoFlowers.Id)
+            if (id != monoFlowers.MonoFlowerId)
             {
                 return NotFound();
             }
@@ -102,7 +102,7 @@ namespace MvcFlowers.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!MonoFlowersExists(monoFlowers.Id))
+                    if (!MonoFlowersExists(monoFlowers.MonoFlowerId))
                     {
                         return NotFound();
                     }
@@ -125,7 +125,7 @@ namespace MvcFlowers.Controllers
             }
 
             var monoFlowers = await _context.MonoFlowers
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.MonoFlowerId == id);
             if (monoFlowers == null)
             {
                 return NotFound();
@@ -151,7 +151,7 @@ namespace MvcFlowers.Controllers
 
         private bool MonoFlowersExists(int id)
         {
-            return _context.MonoFlowers.Any(e => e.Id == id);
+            return _context.MonoFlowers.Any(e => e.MonoFlowerId == id);
         }
     }
 }
