@@ -24,7 +24,16 @@ namespace MvcFlowers.Controllers
         // GET: Bouqet
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Bouqet.Include(b => b.Flowers).ToListAsync());
+            var bouquets = await _context.Bouqet.Include(b => b.Flowers).ToListAsync();
+
+            // Вычисляем стоимость и сумму цветов для каждого букета
+            foreach (var bouqet in bouquets)
+            {
+                bouqet.TotalPrice = bouqet.CalculateTotalPrice();
+                bouqet.FlowersCount = bouqet.CountFlowers();
+            }
+
+            return View(bouquets);
         }
 
         // GET: Bouqet/Details/5
@@ -56,7 +65,7 @@ namespace MvcFlowers.Controllers
             };
             Console.WriteLine("SelectedFlowerIds: " + string.Join(",", bouqet.SelectedFlowerIds));
             // Получаем доступные цветы из базы данных
-            var availableFlowers = _context.MonoFlowers.ToList(); // Предполагается, что у вас есть контекст базы данных
+            var availableFlowers = _context.MonoFlowers.ToList(); 
             
             // Проверяем, есть ли доступные цветы
             if (availableFlowers == null || !availableFlowers.Any())

@@ -14,6 +14,8 @@
         <tr>
             <th>Id</th>
             <th>Цветы в букете</th>
+            <th>Количество цветов</th> <!-- Новая колонка для количества цветов -->
+            <th>Стоимость</th> <!-- Добавлено новое поле для стоимости -->
             <th></th>
         </tr>
     </thead>
@@ -28,15 +30,17 @@
                         {
                             foreach (var flower in item.Flowers)
                             {
-                                <li>@flower.DisplayName</li> <!-- Используем DisplayName для отображения имени цветка -->
+                                <li>@flower.DisplayName</li>
                             }
                         }
                         else
                         {
-                            <li>Нет цветов</li> <!-- Сообщение, если цветов нет -->
+                            <li>Нет цветов</li>
                         }
                     </ul>
                 </td>
+                <td>@item.CountFlowers()</td> <!-- Отображение количества цветов -->
+                <td>@item.TotalPrice.ToString("C")</td> <!-- Отображение стоимости с форматированием -->
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.BouqetId">Edit</a> |
                     <a asp-action="Details" asp-route-id="@item.BouqetId">Details</a> |
