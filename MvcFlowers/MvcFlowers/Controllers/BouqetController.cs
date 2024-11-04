@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using MvcFlowers.Data;
 using MvcFlowers.Models;
 
@@ -16,8 +17,9 @@ namespace MvcFlowers.Controllers
 
         public BouqetController(MvcFlowersContext context)
         {
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
+
 
         // GET: Bouqet
         public async Task<IActionResult> Index()
@@ -50,9 +52,9 @@ namespace MvcFlowers.Controllers
             var bouqet = new Bouqet
             {
                 Flowers = new List<MonoFlowers>(), // Инициализация списка цветов
-                SelectedFlowerIds = new List<int>()
+                //SelectedFlowerIds = new List<int>()
             };
-
+            Console.WriteLine("SelectedFlowerIds: " + string.Join(",", bouqet.SelectedFlowerIds));
             // Получаем доступные цветы из базы данных
             var availableFlowers = _context.MonoFlowers.ToList(); // Предполагается, что у вас есть контекст базы данных
             
@@ -72,41 +74,47 @@ namespace MvcFlowers.Controllers
 
 
 
-
-        // POST: Bouqet/Create
+        // Post: Bouqet/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("BouqetId, SelectedFlowerIds")] Bouqet bouqet)
         {
             try
             {
-                // Проверяем, что SelectedFlowerIds не null
-                if (bouqet.SelectedFlowerIds == null)
+                // Инициализация SelectedFlowerIds как пустой строки, если она null
+                if (string.IsNullOrEmpty(bouqet.SelectedFlowerIds))
                 {
-                    bouqet.SelectedFlowerIds = new List<int>();
+                    bouqet.SelectedFlowerIds = string.Empty; // Инициализируем как пустую строку, если нет выбранных цветов
                 }
 
-                // Инициализируем Flowers, если это необходимо
-                bouqet.Flowers ??= new List<MonoFlowers>(); // Используем оператор null-объединения
+                // Преобразуем строку идентификаторов в список целых чисел
+                var selectedFlowerIds = bouqet.SelectedFlowerIds
+                    .Split(',')
+                    .Select(id => int.TryParse(id, out var parsedId) ? parsedId : (int?)null)
+                    .Where(id => id.HasValue)
+                    .Select(id => id.Value)
+                    .ToList();
+
+                bouqet.Flowers ??= new List<MonoFlowers>();
 
                 if (ModelState.IsValid)
                 {
                     // Получаем выбранные цветы из базы данных
                     bouqet.Flowers = await _context.MonoFlowers
-                        .Where(f => bouqet.SelectedFlowerIds.Contains(f.MonoFlowerId))
+                        .Where(f => selectedFlowerIds.Contains(f.MonoFlowerId))
                         .ToListAsync();
 
-                    // Проверяем, были ли найдены цветы
                     if (bouqet.Flowers == null || !bouqet.Flowers.Any())
                     {
-                        ModelState.AddModelError(string.Empty, "Не найдено ни одного выбранного цвета.");
+                        ModelState.AddModelError(string.Empty, "Не найдено ни одного выбранного цветка.");
                         return View(bouqet);
                     }
 
-                    // Добавляем букет в контекст
-                    _context.Bouqet.Add(bouqet);
+                    // Преобразуем список идентификаторов обратно в строку для хранения
+                    bouqet.SelectedFlowerIds = string.Join(",", selectedFlowerIds);
 
-                    // Сохраняем изменения
+                    // Добавляем букет в контекст и сохраняем изменения
+                    _context.Bouqet.Add(bouqet);
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
                 }
@@ -115,15 +123,16 @@ namespace MvcFlowers.Controllers
             }
             catch (Exception ex)
             {
-                // Логируем информацию об ошибке
                 Console.WriteLine($"Ошибка: {ex.Message}");
                 Console.WriteLine($"StackTrace: {ex.StackTrace}");
 
-                // Вы можете также добавить сообщение об ошибке в ModelState, чтобы отобразить его в представлении
                 ModelState.AddModelError(string.Empty, "Произошла ошибка при создании букета. Пожалуйста, попробуйте еще раз.");
-                return View(bouqet); // Возвращаем представление с текущими данными
+                return View(bouqet);
             }
         }
+
+
+
 
 
 

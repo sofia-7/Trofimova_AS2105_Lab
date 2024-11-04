@@ -19,7 +19,6 @@
     <ul id="flowerList"></ul> <!-- Список для отображения добавленных цветов -->
     <!-- Скрытое поле для передачи идентификаторов выбранных цветов -->
     <input type="hidden" asp-for="SelectedFlowerIds" id="SelectedFlowerIds" />
-
     <button type="submit">Создать букет</button>
 </form>
 
@@ -34,12 +33,12 @@
             const selectedFlowerText = flowerSelect.options[flowerSelect.selectedIndex].text;
 
             if (selectedFlowerId) {
-                // Создаем новый элемент списка для добавленного цветка
+                // Добавление цветка в список на странице
                 const listItem = document.createElement('li');
-                listItem.textContent = selectedFlowerText; // Отображаем имя выбранного цветка
-                flowerList.appendChild(listItem); // Добавляем элемент в список
+                listItem.textContent = selectedFlowerText;
+                flowerList.appendChild(listItem);
 
-                // Обновляем скрытое поле с идентификаторами цветов
+                // Обновление скрытого поля с идентификаторами
                 const currentIds = selectedFlowerIdsInput.value ? selectedFlowerIdsInput.value.split(',') : [];
                 if (!currentIds.includes(selectedFlowerId)) {
                     currentIds.push(selectedFlowerId);
@@ -47,6 +46,7 @@
                 }
 
                 console.log("Добавленный цветок ID: " + selectedFlowerId);
+                console.log("Текущие выбранные ID: " + selectedFlowerIdsInput.value);
             } else {
                 alert("Пожалуйста, выберите цветок.");
             }

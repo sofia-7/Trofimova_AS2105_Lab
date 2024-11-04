@@ -14,11 +14,11 @@ namespace MvcFlowers.Models
         public List<MonoFlowers> Flowers { get; set; } = new List<MonoFlowers>();
 
         // Новое свойство для хранения идентификаторов цветов
-        public List<int> SelectedFlowerIds { get; set; } = new List<int>();
+        public string SelectedFlowerIds { get; set; } // Убедитесь, что это строка
 
         public Bouqet()
         {
-            SelectedFlowerIds = new List<int>();
+            //SelectedFlowerIds = new List<int>();
             Flowers = new List<MonoFlowers>(); // Инициализация коллекции
         }
 
