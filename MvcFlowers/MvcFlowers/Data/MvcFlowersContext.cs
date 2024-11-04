@@ -17,5 +17,6 @@ namespace MvcFlowers.Data
         public DbSet<MvcFlowers.Models.MonoFlowers> MonoFlowers { get; set; } = default!;
         public DbSet<MvcFlowers.Models.Bouqets> Bouqets { get; set; } = default!;
         public DbSet<MvcFlowers.Models.PottedFlowers> PottedFlowers { get; set; } = default!;
+        public DbSet<MvcFlowers.Models.Bouqet> Bouqet { get; set; } = default!;
     }
 }

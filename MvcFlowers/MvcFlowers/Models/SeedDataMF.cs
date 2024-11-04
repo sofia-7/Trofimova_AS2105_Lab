@@ -14,7 +14,7 @@ public static class SeedDataMF
             serviceProvider.GetRequiredService<
                 DbContextOptions<MvcFlowersContext>>()))
         {
-            // Look for any movies.
+            // Look for any flowers.
             if (context.MonoFlowers.Any())
             {
                 return;   // DB has been seeded
