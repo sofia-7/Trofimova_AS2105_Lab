@@ -33,16 +33,22 @@
             const selectedFlowerText = flowerSelect.options[flowerSelect.selectedIndex].text;
 
             if (selectedFlowerId) {
-                // Добавление цветка в список на странице
-                const listItem = document.createElement('li');
-                listItem.textContent = selectedFlowerText;
-                flowerList.appendChild(listItem);
+                // Проверка, есть ли уже этот цветок в списке
+                const existingItems = Array.from(flowerList.getElementsByTagName('li'));
+                const isDuplicate = existingItems.some(item => item.textContent === selectedFlowerText);
 
-                // Обновление скрытого поля с идентификаторами
-                const currentIds = selectedFlowerIdsInput.value ? selectedFlowerIdsInput.value.split(',') : [];
-                if (!currentIds.includes(selectedFlowerId)) {
+                if (!isDuplicate) {
+                    // Добавление цветка в список на странице
+                    const listItem = document.createElement('li');
+                    listItem.textContent = selectedFlowerText;
+                    flowerList.appendChild(listItem);
+
+                    // Обновление скрытого поля с идентификаторами
+                    const currentIds = selectedFlowerIdsInput.value ? selectedFlowerIdsInput.value.split(',') : [];
                     currentIds.push(selectedFlowerId);
                     selectedFlowerIdsInput.value = currentIds.join(',');
+                } else {
+                    alert("Этот цветок уже добавлен в список.");
                 }
 
                 console.log("Добавленный цветок ID: " + selectedFlowerId);
@@ -51,5 +57,6 @@
                 alert("Пожалуйста, выберите цветок.");
             }
         });
+
     </script>
 }
