@@ -1,10 +1,10 @@
 ﻿@model IEnumerable<MvcFlowers.Models.Bouqet>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Bouqets";
 }
 
-<h1>Index</h1>
+<h1>Bouqets</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -13,9 +13,9 @@
     <thead>
         <tr>
             <th>Id</th>
-            <th>Цветы в букете</th>
-            <th>Количество цветов</th> 
-            <th>Стоимость</th> 
+            <th>Mono flowers included</th>
+            <th>Count</th> 
+            <th>Price</th> 
             <th></th>
         </tr>
     </thead>
@@ -35,7 +35,7 @@
                         }
                         else
                         {
-                            <li>Нет цветов</li>
+                            <li>No flowers</li>
                         }
                     </ul>
                 </td>

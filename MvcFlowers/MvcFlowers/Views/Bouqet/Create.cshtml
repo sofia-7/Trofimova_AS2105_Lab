@@ -1,25 +1,25 @@
 ﻿@model MvcFlowers.Models.Bouqet
 
 <form asp-action="Create">
-    <h3>Создание букета</h3>
-    <h4>Добавить цветы в букет</h4>
+    <h3>Create</h3>
+    <h4>Add flowers to the bouqet</h4>
 
     <div id="flowers">
         <select id="flowerSelect">
-            <option value="">-- Выберите цветок --</option>
+            <option value="">-- Choose flower --</option>
             @foreach (var flower in ViewBag.AvailableFlowers)
             {
                 <option value="@flower.Value">@flower.Text</option>
             }
         </select>
-        <button type="button" id="addFlowerButton">Добавить цветок</button>
+        <button type="button" id="addFlowerButton">Add</button>
     </div>
 
-    <h4>Добавленные цветы:</h4>
+    <h4>Added flowers:</h4>
     <ul id="flowerList"></ul> <!-- Список для отображения добавленных цветов -->
     <!-- Скрытое поле для передачи идентификаторов выбранных цветов -->
     <input type="hidden" asp-for="SelectedFlowerIds" id="SelectedFlowerIds" />
-    <button type="submit">Создать букет</button>
+    <button type="submit">Create</button>
 </form>
 
 @section Scripts {

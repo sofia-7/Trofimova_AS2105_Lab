@@ -24,30 +24,44 @@
             <th>
                 @Html.DisplayNameFor(model => model.Colour)
             </th>
+            <th>
+                Freshness
+            </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.RecievementDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Price)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Colour)
-            </td>
-            <td>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RecievementDate)
+                </td>
+                <td>
+                    @item.Price.ToString("C")
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Colour)
+                </td>
+                <td>
+                    @if (item.IsFresh())
+                    {
+                        <span class="text-success">Fresh</span>
+                    }
+                    else
+                    {
+                        <span class="text-danger">Not Fresh</span>
+                    }
+                </td>
+                <td>
                     <a asp-action="Edit" asp-route-id="@item.MonoFlowerId">Edit</a> |
                     <a asp-action="Details" asp-route-id="@item.MonoFlowerId">Details</a> |
                     <a asp-action="Delete" asp-route-id="@item.MonoFlowerId">Delete</a>
-            </td>
-        </tr>
-}
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
