@@ -61,7 +61,7 @@ namespace MvcFlowers.Controllers
 
 
         // GET: Bouqet/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
             var bouqet = new Bouqet
             {
@@ -71,7 +71,14 @@ namespace MvcFlowers.Controllers
             // Получаем доступные цветы из базы данных
             var availableFlowers = _context.MonoFlowers.ToList();
             ViewBag.AvailableFlowers = new SelectList(availableFlowers, "MonoFlowerId", "DisplayName");
+            // Получаем все MonoFlowerId, которые уже существуют в других букете
+            var existingFlowerIds = await _context.Bouqet
+                .SelectMany(b => b.Flowers.Select(f => f.MonoFlowerId)) // Извлекаем MonoFlowerId
+                .Distinct() // Убираем дубликаты
+                .ToListAsync();
 
+            // Передаем в ViewBag для отображения в представлении
+            ViewBag.ExistingFlowerIds = string.Join(", ", existingFlowerIds);
             return View(bouqet);
         }
 
@@ -95,6 +102,7 @@ namespace MvcFlowers.Controllers
                     .SelectMany(b => b.Flowers.Select(f => f.MonoFlowerId)) // Извлекаем MonoFlowerId
                     .Distinct() // Убираем дубликаты
                     .ToListAsync();
+
 
                 // Извлекаем доступные цветы, которые не существуют в других букете
                 bouqet.Flowers = await _context.MonoFlowers

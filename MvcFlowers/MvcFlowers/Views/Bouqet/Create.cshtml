@@ -1,8 +1,8 @@
 ﻿@model MvcFlowers.Models.Bouqet
 
-<form asp-action="Create">
+<form asp-action="Create" id="createBouquetForm">
     <h3>Create</h3>
-    <h4>Add flowers to the bouqet</h4>
+    <h4>Add flowers to the bouquet</h4>
 
     <div id="flowers">
         <select id="flowerSelect">
@@ -14,7 +14,7 @@
         </select>
         <button type="button" id="addFlowerButton">Add</button>
     </div>
-
+    
     <h4>Added flowers:</h4>
     <ul id="flowerList"></ul> <!-- Список для отображения добавленных цветов -->
     <!-- Скрытое поле для передачи идентификаторов выбранных цветов -->
@@ -27,6 +27,10 @@
         const flowerList = document.getElementById('flowerList');
         const flowerSelect = document.getElementById('flowerSelect');
         const selectedFlowerIdsInput = document.getElementById('SelectedFlowerIds');
+        const createBouquetForm = document.getElementById('createBouquetForm');
+
+        // Преобразуем строку ViewBag.ExistingFlowerIds в массив
+        const existingFlowerIds = "@ViewBag.ExistingFlowerIds".split(',').map(id => id.trim());
 
         document.getElementById('addFlowerButton').addEventListener('click', function () {
             const selectedFlowerId = flowerSelect.value;
@@ -36,6 +40,12 @@
                 // Проверка, есть ли уже этот цветок в списке
                 const existingItems = Array.from(flowerList.getElementsByTagName('li'));
                 const isDuplicate = existingItems.some(item => item.textContent === selectedFlowerText);
+
+                // Проверка на совпадение с существующими идентификаторами
+                if (existingFlowerIds.includes(selectedFlowerId)) {
+                    alert("Этот цветок уже существует в других букетах.");
+                    return; // Прекращаем выполнение, если цветок уже существует
+                }
 
                 if (!isDuplicate) {
                     // Добавление цветка в список на странице
@@ -58,5 +68,13 @@
             }
         });
 
+        // Проверка на пустой список перед отправкой формы
+        createBouquetForm.addEventListener('submit', function (event) {
+            const flowerItems = flowerList.getElementsByTagName('li');
+            if (flowerItems.length === 0) {
+                event.preventDefault(); // Предотвращаем отправку формы
+                alert("Пожалуйста, добавьте хотя бы один цветок в букет перед отправкой.");
+            }
+        });
     </script>
 }
