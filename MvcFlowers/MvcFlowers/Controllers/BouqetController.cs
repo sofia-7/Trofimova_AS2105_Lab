@@ -163,10 +163,20 @@ namespace MvcFlowers.Controllers
                 return NotFound();
             }
 
-            // Если Flowers равен null, инициализируйте его
-            if (bouqet.Flowers == null)
+            // Инициализация SelectedFlowerIds, если она null
+            bouqet.SelectedFlowerIds = string.Join(",", bouqet.Flowers.Select(f => f.MonoFlowerId));
+
+            // Получаем доступные цветы из базы данных
+            var availableFlowers = await _context.MonoFlowers.ToListAsync();
+
+            // Проверяем, есть ли доступные цветы
+            if (availableFlowers == null || !availableFlowers.Any())
             {
-                bouqet.Flowers = new List<MonoFlowers>();
+                ViewBag.AvailableFlowers = new SelectList(new List<MonoFlowers>(), "MonoFlowerId", "DisplayName");
+            }
+            else
+            {
+                ViewBag.AvailableFlowers = new SelectList(availableFlowers, "MonoFlowerId", "DisplayName");
             }
 
             return View(bouqet);
@@ -175,7 +185,7 @@ namespace MvcFlowers.Controllers
         // POST: Bouqet/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("BouqetId, Flowers")] Bouqet bouqet)
+        public async Task<IActionResult> Edit(int id, [Bind("BouqetId, SelectedFlowerIds")] Bouqet bouqet)
         {
             if (id != bouqet.BouqetId)
             {
@@ -186,12 +196,26 @@ namespace MvcFlowers.Controllers
             {
                 try
                 {
-                    // Убедитесь, что цветы не равны null
-                    if (bouqet.Flowers == null)
+                    // Преобразуем строку идентификаторов в список целых чисел
+                    var selectedFlowerIds = bouqet.SelectedFlowerIds
+                        .Split(',')
+                        .Select(id => int.TryParse(id, out var parsedId) ? parsedId : (int?)null)
+                        .Where(id => id.HasValue)
+                        .Select(id => id.Value)
+                        .ToList();
+
+                    // Получаем выбранные цветы из базы данных
+                    bouqet.Flowers = await _context.MonoFlowers
+                        .Where(f => selectedFlowerIds.Contains(f.MonoFlowerId))
+                        .ToListAsync();
+
+                    if (bouqet.Flowers == null || !bouqet.Flowers.Any())
                     {
-                        bouqet.Flowers = new List<MonoFlowers>(); // Инициализация списка, если он null
+                        ModelState.AddModelError(string.Empty, "Не найдено ни одного выбранного цветка.");
+                        return View(bouqet);
                     }
 
+                    // Обновляем букеты в контексте
                     _context.Update(bouqet);
                     await _context.SaveChangesAsync();
                 }
@@ -208,8 +232,10 @@ namespace MvcFlowers.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+
             return View(bouqet);
         }
+
 
         // GET: Bouqet/Delete/5
         public async Task<IActionResult> Delete(int? id)

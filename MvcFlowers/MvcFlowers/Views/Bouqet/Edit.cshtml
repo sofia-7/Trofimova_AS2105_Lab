@@ -13,6 +13,18 @@
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="BouqetId" />
+
+            <div class="form-group">
+                <label for="SelectedFlowerIds">Select Flowers</label>
+                <select asp-for="SelectedFlowerIds" class="form-control" multiple id="flowerSelect">
+                    @foreach (var flower in ViewBag.AvailableFlowers)
+                    {
+                        <option value="@flower.Value">@flower.Text</option>
+                    }
+                </select>
+                <span asp-validation-for="SelectedFlowerIds" class="text-danger"></span>
+            </div>
+
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
@@ -26,4 +38,17 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var selectedFlowerIds = '@Model.SelectedFlowerIds';
+            var selectedIdsArray = selectedFlowerIds.split(',');
+
+            var flowerSelect = document.getElementById('flowerSelect');
+            for (var i = 0; i < flowerSelect.options.length; i++) {
+                if (selectedIdsArray.includes(flowerSelect.options[i].value)) {
+                    flowerSelect.options[i].selected = true;
+                }
+            }
+        });
+    </script>
 }
