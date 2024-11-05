@@ -236,6 +236,34 @@ namespace MvcFlowers.Controllers
             return View(bouqet);
         }
 
+        // POST: Bouqet/DeleteFlower/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteFlower(int bouqetId, int flowerId)
+        {
+            var bouqet = await _context.Bouqet.Include(b => b.Flowers)
+                .FirstOrDefaultAsync(b => b.BouqetId == bouqetId);
+
+            if (bouqet == null)
+            {
+                return NotFound();
+            }
+
+            // Удаляем цветок из букета
+            var flowerToRemove = bouqet.Flowers.FirstOrDefault(f => f.MonoFlowerId == flowerId);
+            if (flowerToRemove != null)
+            {
+                bouqet.Flowers.Remove(flowerToRemove);
+            }
+
+            // Обновляем SelectedFlowerIds
+            bouqet.SelectedFlowerIds = string.Join(",", bouqet.Flowers.Select(f => f.MonoFlowerId));
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Edit), new { id = bouqetId });
+        }
+
+
 
         // GET: Bouqet/Delete/5
         public async Task<IActionResult> Delete(int? id)
