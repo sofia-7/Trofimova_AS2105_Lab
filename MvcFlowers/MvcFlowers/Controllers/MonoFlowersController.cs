@@ -54,7 +54,7 @@ namespace MvcFlowers.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("MonoFlowerId,Name,RecievementDate,Price,Colour")] MonoFlowers monoFlowers)
+        public async Task<IActionResult> Create([Bind("MonoFlowerId,Name,RecievementDate,Price,Colour,QuantityInBatch")] MonoFlowers monoFlowers)
         {
             if (ModelState.IsValid)
             {
@@ -86,7 +86,7 @@ namespace MvcFlowers.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("MonoFlowerId,Name,RecievementDate,Price,Colour")] MonoFlowers monoFlowers)
+        public async Task<IActionResult> Edit(int id, [Bind("MonoFlowerId,Name,RecievementDate,Price,Colour,QuantityInBatch")] MonoFlowers monoFlowers)
         {
             if (id != monoFlowers.MonoFlowerId)
             {

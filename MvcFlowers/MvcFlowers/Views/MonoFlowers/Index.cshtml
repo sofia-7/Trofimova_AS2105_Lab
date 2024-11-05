@@ -27,6 +27,9 @@
             <th>
                 Freshness
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.QuantityInBatch)
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -55,6 +58,9 @@
                     {
                         <span class="text-danger">Not Fresh</span>
                     }
+                </td>
+                <td>
+                    @item.QuantityInBatch
                 </td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.MonoFlowerId">Edit</a> |
