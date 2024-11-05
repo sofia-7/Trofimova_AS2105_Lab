@@ -54,7 +54,7 @@ namespace MvcFlowers.Controllers
 
             // Устанавливаем количество цветов и общую стоимость
             bouqet.FlowersCount = bouqet.Flowers.Count;
-            bouqet.TotalPrice = bouqet.Flowers.Sum(f => f.Price); // Предполагаем, что у каждого цветка есть свойство Price
+            bouqet.TotalPrice = bouqet.Flowers.Sum(f => f.Price); 
 
             return View(bouqet);
         }
@@ -90,13 +90,20 @@ namespace MvcFlowers.Controllers
                     .Select(id => id.Value)
                     .ToList();
 
+                // Получаем все MonoFlowerId, которые уже существуют в других букете
+                var existingFlowerIds = await _context.Bouqet
+                    .SelectMany(b => b.Flowers.Select(f => f.MonoFlowerId)) // Извлекаем MonoFlowerId
+                    .Distinct() // Убираем дубликаты
+                    .ToListAsync();
+
+                // Извлекаем доступные цветы, которые не существуют в других букете
                 bouqet.Flowers = await _context.MonoFlowers
-                    .Where(f => selectedFlowerIds.Contains(f.MonoFlowerId))
+                    .Where(f => selectedFlowerIds.Contains(f.MonoFlowerId) && !existingFlowerIds.Contains(f.MonoFlowerId))
                     .ToListAsync();
 
                 if (!bouqet.Flowers.Any())
                 {
-                    ModelState.AddModelError(string.Empty, "Не найдено ни одного выбранного цветка.");
+                    ModelState.AddModelError(string.Empty, "Не найдено ни одного выбранного цветка, который можно добавить.");
                     return View(bouqet);
                 }
 
@@ -108,6 +115,7 @@ namespace MvcFlowers.Controllers
 
             return View(bouqet);
         }
+
 
         // GET: Bouqet/Edit/5
         public async Task<IActionResult> Edit(int? id)
