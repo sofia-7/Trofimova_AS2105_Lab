@@ -147,7 +147,6 @@ namespace MvcFlowers.Controllers
             {
                 try
                 {
-                    // Преобразуем строку идентификаторов в список целых чисел
                     var selectedFlowerIds = bouqet.SelectedFlowerIds
                         .Split(',')
                         .Select(id => int.TryParse(id, out var parsedId) ? parsedId : (int?)null)
@@ -155,19 +154,32 @@ namespace MvcFlowers.Controllers
                         .Select(id => id.Value)
                         .ToList();
 
-                    // Получаем выбранные цветы из базы данных
-                    bouqet.Flowers = await _context.MonoFlowers
+                    // Извлечение цветов из базы данных
+                    var selectedFlowers = await _context.MonoFlowers
                         .Where(f => selectedFlowerIds.Contains(f.MonoFlowerId))
                         .ToListAsync();
 
-                    if (!bouqet.Flowers.Any())
+                    var existingBouquet = await _context.Bouqet
+                        .Include(b => b.Flowers)
+                        .FirstOrDefaultAsync(b => b.BouqetId == bouqet.BouqetId);
+
+                    if (existingBouquet == null)
                     {
-                        ModelState.AddModelError(string.Empty, "Не найдено ни одного выбранного цветка.");
-                        return View(bouqet);
+                        return NotFound();
                     }
 
-                    // Обновляем букеты в контексте
-                    _context.Update(bouqet);
+                    // Добавление только новых 
+                    foreach (var flower in selectedFlowers)
+                    {
+                        // Добавление только если еще нет
+                        if (!existingBouquet.Flowers.Any(f => f.MonoFlowerId == flower.MonoFlowerId))
+                        {
+                            existingBouquet.Flowers.Add(flower);
+                        }
+                    }
+
+                    // Обновление букета
+                    _context.Update(existingBouquet);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -186,6 +198,10 @@ namespace MvcFlowers.Controllers
 
             return View(bouqet);
         }
+
+
+
+
 
         // POST: Bouqet/DeleteFlower/5
         [HttpPost]
