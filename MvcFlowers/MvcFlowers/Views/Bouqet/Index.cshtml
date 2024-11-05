@@ -14,8 +14,8 @@
         <tr>
             <th>Id</th>
             <th>Цветы в букете</th>
-            <th>Количество цветов</th> <!-- Новая колонка для количества цветов -->
-            <th>Стоимость</th> <!-- Добавлено новое поле для стоимости -->
+            <th>Количество цветов</th> 
+            <th>Стоимость</th> 
             <th></th>
         </tr>
     </thead>
@@ -39,8 +39,8 @@
                         }
                     </ul>
                 </td>
-                <td>@item.CountFlowers()</td> <!-- Отображение количества цветов -->
-                <td>@item.TotalPrice.ToString("C")</td> <!-- Отображение стоимости с форматированием -->
+                <td>@item.CountFlowers()</td> 
+                <td>@item.TotalPrice.ToString("C")</td> 
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.BouqetId">Edit</a> |
                     <a asp-action="Details" asp-route-id="@item.BouqetId">Details</a> |

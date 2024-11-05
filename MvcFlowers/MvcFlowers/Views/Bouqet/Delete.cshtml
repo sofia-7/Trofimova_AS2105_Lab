@@ -11,11 +11,45 @@
     <h4>Bouqet</h4>
     <hr />
     <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.BouqetId)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.BouqetId)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.FlowersCount)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.FlowersCount)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.TotalPrice)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.TotalPrice)
+        </dd>
+        <dt class="col-sm-2">Flowers:</dt>
+        <dd class="col-sm-10">
+            @if (Model.Flowers != null && Model.Flowers.Any())
+            {
+                <ul>
+                    @foreach (var flower in Model.Flowers)
+                    {
+                        <li>@flower.DisplayName</li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p>No flowers in this bouquet.</p>
+            }
+        </dd>
     </dl>
-    
+
     <form asp-action="Delete">
         <input type="hidden" asp-for="BouqetId" />
         <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
     </form>
 </div>
