@@ -18,9 +18,7 @@ namespace MvcFlowers.Models
             get => (int)Price; 
             set => Price = value; 
         }
-        [Range(1, int.MaxValue, ErrorMessage = "Количество цветов в партии должно быть не менее 1.")]
-        public int QuantityInBatch { get; set; }
-        // Новое свойство для отображения
+        
         public string DisplayName => $"{Name} ({Colour})";
     
     // Метод для подсчета свежести цветка

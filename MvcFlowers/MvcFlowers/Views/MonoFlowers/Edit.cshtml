@@ -10,12 +10,12 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit">
+        <form asp-action="Edit" id="editForm">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="MonoFlowerId" />
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
+                <input asp-for="Name" class="form-control" id="nameInput" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -30,13 +30,8 @@
             </div>
             <div class="form-group">
                 <label asp-for="Colour" class="control-label"></label>
-                <input asp-for="Colour" class="form-control" />
+                <input asp-for="Colour" class="form-control" id="colourInput" />
                 <span asp-validation-for="Colour" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="QuantityInBatch" class="control-label"></label>
-                <input asp-for="QuantityInBatch" class="form-control" />
-                <span asp-validation-for="QuantityInBatch" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
@@ -50,5 +45,31 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        document.getElementById('editForm').addEventListener('submit', function (event) {
+            const nameInput = document.getElementById('nameInput');
+            const colourInput = document.getElementById('colourInput');
+            const nameValue = nameInput.value.trim();
+            const colourValue = colourInput.value.trim();
+            const regex = /^[A-Za-zА-Яа-яЁё]+$/; // Регулярное выражение для проверки только букв
+
+            // Проверка поля Name
+            if (!regex.test(nameValue)) {
+                event.preventDefault(); // Предотвращаем отправку формы
+                alert("Поле 'Name' должно содержать только буквы.");
+                nameInput.focus(); // Устанавливаем фокус на поле ввода
+                return; 
+            }
+
+            // Проверка поля Colour
+            if (!regex.test(colourValue)) {
+                event.preventDefault(); // Предотвращаем отправку формы
+                alert("Поле 'Colour' должно содержать только буквы.");
+                colourInput.focus(); // Устанавливаем фокус на поле ввода
+            }
+        });
+    </script>
 }

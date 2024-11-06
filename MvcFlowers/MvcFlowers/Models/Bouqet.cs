@@ -22,7 +22,7 @@ namespace MvcFlowers.Models
 
         public Bouqet()
         {
-            Flowers = new List<MonoFlowers>(); // Инициализация коллекции
+            Flowers = new List<MonoFlowers>(); 
         }
 
         // Метод для подсчета стоимости букета
