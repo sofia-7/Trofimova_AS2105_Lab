@@ -6,6 +6,21 @@
 
 <h1>Bouqets</h1>
 
+<!-- Вывод сообщений -->
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
 <p>
     <a asp-action="Create">Create New</a>
 </p>
@@ -14,9 +29,9 @@
         <tr>
             <th>Id</th>
             <th>Mono flowers included</th>
-            <th>Count</th> 
-            <th>Price</th> 
-            <th></th>
+            <th>Count</th>
+            <th>Price</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -39,12 +54,13 @@
                         }
                     </ul>
                 </td>
-                <td>@item.CountFlowers()</td> 
-                <td>@item.TotalPrice.ToString("C")</td> 
+                <td>@item.CountFlowers()</td>
+                <td>@item.TotalPrice.ToString("C")</td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.BouqetId">Edit</a> |
                     <a asp-action="Details" asp-route-id="@item.BouqetId">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.BouqetId">Delete</a>
+                    <a asp-action="Delete" asp-route-id="@item.BouqetId">Delete</a> |
+                    <a asp-action="Order" asp-route-id="@item.BouqetId" class="btn btn-primary">Order</a>
                 </td>
             </tr>
         }

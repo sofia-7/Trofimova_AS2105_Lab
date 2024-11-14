@@ -18,7 +18,7 @@ namespace MvcFlowers.Data
         public DbSet<MvcFlowers.Models.Bouqet> Bouqet { get; set; } = default!;
         public DbSet<MonoFlowers> Flowers { get; set; }
 
-
+        public DbSet<Order> Orders { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
 {
         base.OnModelCreating(modelBuilder);
