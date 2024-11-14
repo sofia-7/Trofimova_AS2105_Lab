@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace MvcFlowers.Models
 {
@@ -23,6 +24,7 @@ namespace MvcFlowers.Models
         public int BouqetId { get; set; }
 
         // Навигационное свойство
+        [JsonIgnore]
         public Bouqet Bouqet { get; set; }
     }
 }

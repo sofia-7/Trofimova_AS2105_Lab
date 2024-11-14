@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MvcFlowers.Data;
 using MvcFlowers.Models;
 
 namespace MvcFlowers.Controllers
 {
-    public class MonoFlowersController : Controller
+    [Route("api/[controller]")]
+    [ApiController]
+    public class MonoFlowersController : ControllerBase
     {
         private readonly MvcFlowersContext _context;
 
@@ -19,78 +20,49 @@ namespace MvcFlowers.Controllers
             _context = context;
         }
 
-        // GET: MonoFlowers
-        public async Task<IActionResult> Index()
+        // GET: api/MonoFlowers
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<MonoFlowers>>> GetMonoFlowers()
         {
-            return View(await _context.MonoFlowers.ToListAsync());
+            return Ok(await _context.MonoFlowers.ToListAsync());
         }
 
-        // GET: MonoFlowers/Details/5
-        public async Task<IActionResult> Details(int? id)
+        // GET: api/MonoFlowers/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<MonoFlowers>> GetMonoFlower(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            var monoFlowers = await _context.MonoFlowers.FindAsync(id);
 
-            var monoFlowers = await _context.MonoFlowers
-                .FirstOrDefaultAsync(m => m.MonoFlowerId == id);
             if (monoFlowers == null)
             {
                 return NotFound();
             }
 
-            return View(monoFlowers);
+            return Ok(monoFlowers);
         }
 
-        // GET: MonoFlowers/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: MonoFlowers/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: api/MonoFlowers
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("MonoFlowerId,Name,RecievementDate,PriceAsInt,Colour")] MonoFlowers monoFlowers)
+        public async Task<ActionResult<MonoFlowers>> CreateMonoFlower([FromBody] MonoFlowers monoFlowers)
         {
             if (ModelState.IsValid)
             {
                 _context.Add(monoFlowers);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+
+                return CreatedAtAction(nameof(GetMonoFlower), new { id = monoFlowers.MonoFlowerId }, monoFlowers);
             }
-            return View(monoFlowers);
+
+            return BadRequest(ModelState);
         }
 
-        // GET: MonoFlowers/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var monoFlowers = await _context.MonoFlowers.FindAsync(id);
-            if (monoFlowers == null)
-            {
-                return NotFound();
-            }
-            return View(monoFlowers);
-        }
-
-        // POST: MonoFlowers/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("MonoFlowerId,Name,RecievementDate,PriceAsInt,Colour")] MonoFlowers monoFlowers)
+        // PUT: api/MonoFlowers/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateMonoFlower(int id, [FromBody] MonoFlowers monoFlowers)
         {
             if (id != monoFlowers.MonoFlowerId)
             {
-                return NotFound();
+                return BadRequest();
             }
 
             if (ModelState.IsValid)
@@ -111,42 +83,27 @@ namespace MvcFlowers.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+
+                return NoContent();
             }
-            return View(monoFlowers);
+
+            return BadRequest(ModelState);
         }
 
-        // GET: MonoFlowers/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        // DELETE: api/MonoFlowers/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteMonoFlower(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var monoFlowers = await _context.MonoFlowers
-                .FirstOrDefaultAsync(m => m.MonoFlowerId == id);
+            var monoFlowers = await _context.MonoFlowers.FindAsync(id);
             if (monoFlowers == null)
             {
                 return NotFound();
             }
 
-            return View(monoFlowers);
-        }
-
-        // POST: MonoFlowers/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var monoFlowers = await _context.MonoFlowers.FindAsync(id);
-            if (monoFlowers != null)
-            {
-                _context.MonoFlowers.Remove(monoFlowers);
-            }
-
+            _context.MonoFlowers.Remove(monoFlowers);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+            return NoContent();
         }
 
         private bool MonoFlowersExists(int id)

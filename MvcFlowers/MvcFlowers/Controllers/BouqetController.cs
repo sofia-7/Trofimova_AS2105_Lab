@@ -1,16 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MvcFlowers.Data;
 using MvcFlowers.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace MvcFlowers.Controllers
 {
-    public class BouqetController : Controller
+    [Route("api/[controller]")]
+    [ApiController]
+    public class BouqetController : ControllerBase
     {
         private readonly MvcFlowersContext _context;
 
@@ -19,8 +20,9 @@ namespace MvcFlowers.Controllers
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        // GET: Bouqet
-        public async Task<IActionResult> Index()
+        // GET: api/Bouqet
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Bouqet>>> GetBouquets()
         {
             var bouquets = await _context.Bouqet.Include(b => b.Flowers).ToListAsync();
 
@@ -31,20 +33,15 @@ namespace MvcFlowers.Controllers
                 bouqet.FlowersCount = bouqet.CountFlowers();
             }
 
-            return View(bouquets);
+            return Ok(bouquets);
         }
 
-        // GET: Bouqet/Details/5
-        public async Task<IActionResult> Details(int? id)
+        // GET: api/Bouqet/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Bouqet>> GetBouquet(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            // Загружаем букет вместе с его цветами
             var bouqet = await _context.Bouqet
-                .Include(b => b.Flowers) // Включаем цветы
+                .Include(b => b.Flowers)
                 .FirstOrDefaultAsync(m => m.BouqetId == id);
 
             if (bouqet == null)
@@ -56,35 +53,12 @@ namespace MvcFlowers.Controllers
             bouqet.FlowersCount = bouqet.Flowers.Count;
             bouqet.TotalPrice = bouqet.Flowers.Sum(f => f.Price);
 
-            return View(bouqet);
+            return Ok(bouqet);
         }
 
-        // GET: Bouqet/Create
-        public async Task<IActionResult> Create()
-        {
-            var bouqet = new Bouqet
-            {
-                Flowers = new List<MonoFlowers>(), // Инициализация списка цветов
-            };
-
-            // Получаем доступные цветы из базы данных
-            var availableFlowers = _context.MonoFlowers.ToList();
-            ViewBag.AvailableFlowers = new SelectList(availableFlowers, "MonoFlowerId", "DisplayName");
-            // Получаем все MonoFlowerId, которые уже существуют в других букете
-            var existingFlowerIds = await _context.Bouqet
-                .SelectMany(b => b.Flowers.Select(f => f.MonoFlowerId)) // Извлекаем MonoFlowerId
-                .Distinct() // Убираем дубликаты
-                .ToListAsync();
-
-            // Передаем в ViewBag для отображения в представлении
-            ViewBag.ExistingFlowerIds = string.Join(", ", existingFlowerIds);
-            return View(bouqet);
-        }
-
-        // POST: Bouqet/Create
+        // POST: api/Bouqet
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("BouqetId, SelectedFlowerIds")] Bouqet bouqet)
+        public async Task<ActionResult<Bouqet>> CreateBouquet([FromBody] Bouqet bouqet)
         {
             if (ModelState.IsValid)
             {
@@ -96,57 +70,25 @@ namespace MvcFlowers.Controllers
                     // Добавляем букет в контекст и сохраняем изменения
                     _context.Bouqet.Add(newBouquet);
                     await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
+
+                    return CreatedAtAction(nameof(GetBouquet), new { id = newBouquet.BouqetId }, newBouquet);
                 }
                 catch (InvalidOperationException ex)
                 {
-                    ModelState.AddModelError(string.Empty, ex.Message);
-                    return View(bouqet);
+                    return BadRequest(ex.Message);
                 }
             }
 
-            return View(bouqet);
+            return BadRequest(ModelState);
         }
 
-
-        // GET: Bouqet/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var bouqet = await _context.Bouqet
-                .Include(b => b.Flowers)
-                .FirstOrDefaultAsync(m => m.BouqetId == id);
-            if (bouqet == null)
-            {
-                return NotFound();
-            }
-
-            // Получаем существующие MonoFlowerId в других букете
-            var existingFlowerIds = await Bouqet.GetExistingMonoFlowerIds(_context, bouqet.BouqetId);
-
-            // Дополнительная логика, если необходимо
-
-            bouqet.SelectedFlowerIds = string.Join(",", bouqet.Flowers.Select(f => f.MonoFlowerId));
-
-            var availableFlowers = await _context.MonoFlowers.ToListAsync();
-            ViewBag.AvailableFlowers = new SelectList(availableFlowers, "MonoFlowerId", "DisplayName");
-
-            return View(bouqet);
-        }
-
-
-        // POST: Bouqet/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("BouqetId, SelectedFlowerIds")] Bouqet bouqet)
+        // PUT: api/Bouqet/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateBouquet(int id, [FromBody] Bouqet bouqet)
         {
             if (id != bouqet.BouqetId)
             {
-                return NotFound();
+                return BadRequest();
             }
 
             if (ModelState.IsValid)
@@ -167,6 +109,8 @@ namespace MvcFlowers.Controllers
                     // Обновление букета в контексте
                     _context.Update(updatedBouquet);
                     await _context.SaveChangesAsync();
+
+                    return NoContent();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -179,65 +123,14 @@ namespace MvcFlowers.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
             }
 
-            return View(bouqet);
+            return BadRequest(ModelState);
         }
 
-
-
-
-        // POST: Bouqet/DeleteFlower/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteFlower(int bouqetId, int flowerId)
-        {
-            try
-            {
-                await Bouqet.DeleteFlower(_context, bouqetId, flowerId);
-                await _context.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError(string.Empty, ex.Message);
-                return View("Edit", await _context.Bouqet.Include(b => b.Flowers).FirstOrDefaultAsync(b => b.BouqetId == bouqetId));
-            }
-
-            return RedirectToAction(nameof(Edit), new { id = bouqetId });
-        }
-
-
-        // GET: Bouqet/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            // Загружаем букет и его цветы
-            var bouqet = await _context.Bouqet
-                .Include(b => b.Flowers) // Включаем цветы
-                .FirstOrDefaultAsync(m => m.BouqetId == id);
-
-            if (bouqet == null)
-            {
-                return NotFound();
-            }
-
-            // Устанавливаем количество цветов и общую стоимость
-            bouqet.FlowersCount = bouqet.Flowers.Count;
-            bouqet.TotalPrice = bouqet.Flowers.Sum(f => f.Price); // Предполагаем, что у каждого цветка есть свойство Price
-
-            return View(bouqet);
-        }
-
-
-        // POST: Bouqet/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        // DELETE: api/Bouqet/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteBouquet(int id)
         {
             try
             {
@@ -246,68 +139,15 @@ namespace MvcFlowers.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError(string.Empty, ex.Message);
-                return View("Delete", await _context.Bouqet.FindAsync(id));
+                return BadRequest(ex.Message);
             }
 
-            return RedirectToAction(nameof(Index));
+            return NoContent();
         }
-
-        // GET: Bouqet/Order/5
-        public async Task<IActionResult> Order(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var bouqet = await _context.Bouqet.FindAsync(id);
-            if (bouqet == null)
-            {
-                return NotFound();
-            }
-
-            var order = new Order
-            {
-                BouqetId = bouqet.BouqetId
-            };
-
-            return View(order);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Order(Order order)
-        {
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    // Сохранение заказа в базе данных
-                    _context.Orders.Add(order);
-                    await _context.SaveChangesAsync();
-                    TempData["SuccessMessage"] = "Order completed"; // Сообщение об успешном заказе
-                    return RedirectToAction(nameof(Index)); // Перенаправление на страницу со списком букетов
-                }
-                catch (Exception)
-                {
-                    TempData["ErrorMessage"] = "Error"; // Сообщение об ошибке
-                    return RedirectToAction(nameof(Index)); // Перенаправление на страницу со списком букетов
-                }
-            }
-            else
-            {
-                TempData["ErrorMessage"] = "Error"; // Сообщение об ошибке валидации
-                return View(order);
-            }
-        }
-
-
 
         private bool BouqetExists(int id)
         {
             return _context.Bouqet.Any(e => e.BouqetId == id);
         }
-
     }
 }

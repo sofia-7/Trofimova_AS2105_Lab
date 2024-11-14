@@ -2,27 +2,30 @@
 using Microsoft.Extensions.DependencyInjection;
 using MvcFlowers.Data;
 using MvcFlowers.Models;
-var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddDbContext<MvcFlowersContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("MvcFlowersContext") ?? throw new InvalidOperationException("Connection string 'MvcFlowersContext' not found.")));
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
+var builder = WebApplication.CreateBuilder(args);
+
+// Настройка контекста базы данных
+builder.Services.AddDbContext<MvcFlowersContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("MvcFlowersContext") ??
+    throw new InvalidOperationException("Connection string 'MvcFlowersContext' not found.")));
+
+// Добавление сервисов для контроллеров API
+builder.Services.AddControllers(); // Измените на AddControllers(), чтобы использовать только API
 
 var app = builder.Build();
 
+// Инициализация данных
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-
     SeedDataMF.Initialize(services);
 }
 
-// Configure the HTTP request pipeline.
+// Настройка HTTP-запросов
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseExceptionHandler("/error"); // Обработка ошибок
     app.UseHsts();
 }
 
@@ -33,8 +36,9 @@ app.UseRouting();
 
 app.UseAuthorization();
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+// Настройка маршрутизации для API
+app.MapControllers(); // Используйте MapControllers() для маршрутизации API
 
 app.Run();
+
+
