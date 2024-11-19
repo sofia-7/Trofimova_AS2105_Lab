@@ -39,6 +39,7 @@ app.UseAuthorization();
 // Настройка маршрутизации для API
 app.MapControllers(); // Используйте MapControllers() для маршрутизации API
 
+// Добавление маршрута для стартовой страницы
+app.MapGet("/", () => "Welcome to the shop!");
+
 app.Run();
-
-
