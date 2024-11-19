@@ -14,7 +14,7 @@ namespace MvcFlowers.Models
         public int BouqetId { get; set; }
         public List<MonoFlowers> Flowers { get; set; } = new List<MonoFlowers>();
 
-        [NotMapped]
+        //[NotMapped]
         public decimal TotalPrice { get; set; }
         [NotMapped]
         public int FlowersCount { get; set; }

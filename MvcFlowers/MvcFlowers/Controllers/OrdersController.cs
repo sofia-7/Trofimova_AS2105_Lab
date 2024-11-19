@@ -23,9 +23,25 @@ namespace MvcFlowers.Controllers
         [HttpGet]
         public async Task<IActionResult> GetOrders()
         {
-            var orders = await _context.Orders.Include(o => o.Bouqet).ToListAsync();
+            var orders = await _context.Orders
+                .Include(o => o.Bouqet)
+                .ThenInclude(b => b.Flowers) // Добавляем это, чтобы загрузить цветы букета
+                .Select(o => new OrderDto
+                {
+                    OrderId = o.OrderId,
+                    FullName = o.FullName,
+                    Phone = o.Phone,
+                    Address = o.Address,
+                    BouqetId = o.BouqetId,
+                    TotalPrice = o.Bouqet.CalculateTotalPrice() // Вычисляем стоимость букета
+                })
+                .ToListAsync();
+
             return Ok(orders);
         }
+
+
+
 
         // GET: api/Orders/5
         [HttpGet("{id}")]
