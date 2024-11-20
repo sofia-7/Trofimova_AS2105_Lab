@@ -22,16 +22,16 @@ namespace MvcFlowers.Controllers
 
         // GET: api/MonoFlowers
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<MonoFlowers>>> GetMonoFlowers()
+        public async Task<ActionResult<IEnumerable<Flower>>> GetMonoFlowers()
         {
-            return Ok(await _context.MonoFlowers.ToListAsync());
+            return Ok(await _context.Flowers.ToListAsync());
         }
 
         // GET: api/MonoFlowers/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<MonoFlowers>> GetMonoFlower(int id)
+        public async Task<ActionResult<Flower>> GetMonoFlower(int id)
         {
-            var monoFlowers = await _context.MonoFlowers.FindAsync(id);
+            var monoFlowers = await _context.Flowers.FindAsync(id);
 
             if (monoFlowers == null)
             {
@@ -43,14 +43,14 @@ namespace MvcFlowers.Controllers
 
         // POST: api/MonoFlowers
         [HttpPost]
-        public async Task<ActionResult<MonoFlowers>> CreateMonoFlower([FromBody] MonoFlowers monoFlowers)
+        public async Task<ActionResult<Flower>> CreateMonoFlower([FromBody] Flower monoFlowers)
         {
             if (ModelState.IsValid)
             {
                 _context.Add(monoFlowers);
                 await _context.SaveChangesAsync();
 
-                return CreatedAtAction(nameof(GetMonoFlower), new { id = monoFlowers.MonoFlowerId }, monoFlowers);
+                return CreatedAtAction(nameof(GetMonoFlower), new { id = monoFlowers.FlowerId }, monoFlowers);
             }
 
             return BadRequest(ModelState);
@@ -58,9 +58,9 @@ namespace MvcFlowers.Controllers
 
         // PUT: api/MonoFlowers/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateMonoFlower(int id, [FromBody] MonoFlowers monoFlowers)
+        public async Task<IActionResult> UpdateMonoFlower(int id, [FromBody] Flower monoFlowers)
         {
-            if (id != monoFlowers.MonoFlowerId)
+            if (id != monoFlowers.FlowerId)
             {
                 return BadRequest();
             }
@@ -74,7 +74,7 @@ namespace MvcFlowers.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!MonoFlowersExists(monoFlowers.MonoFlowerId))
+                    if (!MonoFlowersExists(monoFlowers.FlowerId))
                     {
                         return NotFound();
                     }
@@ -94,13 +94,13 @@ namespace MvcFlowers.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMonoFlower(int id)
         {
-            var monoFlowers = await _context.MonoFlowers.FindAsync(id);
+            var monoFlowers = await _context.Flowers.FindAsync(id);
             if (monoFlowers == null)
             {
                 return NotFound();
             }
 
-            _context.MonoFlowers.Remove(monoFlowers);
+            _context.Flowers.Remove(monoFlowers);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -108,7 +108,7 @@ namespace MvcFlowers.Controllers
 
         private bool MonoFlowersExists(int id)
         {
-            return _context.MonoFlowers.Any(e => e.MonoFlowerId == id);
+            return _context.Flowers.Any(e => e.FlowerId == id);
         }
     }
 }

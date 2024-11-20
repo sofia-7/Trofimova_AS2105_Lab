@@ -15,7 +15,7 @@ public static class SeedDataMF
                 DbContextOptions<MvcFlowersContext>>()))
         {
             // Look for any flowers.
-            if (context.MonoFlowers.Any())
+            if (context.Flowers.Any())
             {
                 return;   // DB has been seeded
             }

@@ -26,12 +26,7 @@ namespace MvcFlowers.Controllers
         {
             var bouquets = await _context.Bouqet.Include(b => b.Flowers).ToListAsync();
 
-            // Вычисляем стоимость и сумму цветов для каждого букета
-            foreach (var bouqet in bouquets)
-            {
-                bouqet.TotalPrice = bouqet.CalculateTotalPrice();
-                bouqet.FlowersCount = bouqet.CountFlowers();
-            }
+       
 
             return Ok(bouquets);
         }
@@ -49,10 +44,6 @@ namespace MvcFlowers.Controllers
                 return NotFound();
             }
 
-            // Устанавливаем количество цветов и общую стоимость
-            bouqet.FlowersCount = bouqet.Flowers.Count;
-            bouqet.TotalPrice = bouqet.Flowers.Sum(f => f.Price);
-
             return Ok(bouqet);
         }
 
@@ -65,13 +56,13 @@ namespace MvcFlowers.Controllers
                 try
                 {
                     // Создаем букет с помощью метода модели
-                    var newBouquet = await Bouqet.CreateBouquet(_context, bouqet.SelectedFlowerIds);
+                    var newBouquet = new Bouqet();
 
                     // Добавляем букет в контекст и сохраняем изменения
-                    _context.Bouqet.Add(newBouquet);
-                    await _context.SaveChangesAsync();
+                    //_context.Bouqet.Add(newBouquet);
+                    //await _context.SaveChangesAsync();
 
-                    return CreatedAtAction(nameof(GetBouquet), new { id = newBouquet.BouqetId }, newBouquet);
+                    return Ok();// CreatedAtAction(nameof(GetBouquet), new { id = newBouquet.BouqetId }, newBouquet);
                 }
                 catch (InvalidOperationException ex)
                 {
@@ -104,11 +95,11 @@ namespace MvcFlowers.Controllers
                         .ToList();
 
                     // Обновляем букет с помощью метода модели
-                    var updatedBouquet = await Bouqet.EditBouquet(_context, bouqet, selectedFlowerIds);
+                   // var updatedBouquet = await Bouqet.EditBouquet(_context, bouqet, selectedFlowerIds);
 
                     // Обновление букета в контексте
-                    _context.Update(updatedBouquet);
-                    await _context.SaveChangesAsync();
+                   // _context.Update(updatedBouquet);
+                    //await _context.SaveChangesAsync();
 
                     return NoContent();
                 }
@@ -134,7 +125,7 @@ namespace MvcFlowers.Controllers
         {
             try
             {
-                await Bouqet.DeleteBouquet(_context, id);
+               // await Bouqet.DeleteBouquet(_context, id);
                 await _context.SaveChangesAsync();
             }
             catch (Exception ex)

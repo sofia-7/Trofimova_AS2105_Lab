@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MvcFlowers.Data;
 
@@ -11,9 +12,11 @@ using MvcFlowers.Data;
 namespace MvcFlowers.Migrations
 {
     [DbContext(typeof(MvcFlowersContext))]
-    partial class MvcFlowersContextModelSnapshot : ModelSnapshot
+    [Migration("20241120083510_Postman")]
+    partial class Postman
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,6 +24,21 @@ namespace MvcFlowers.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("BouqetFlowers", b =>
+                {
+                    b.Property<int>("BouqetId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MonoFlowerId")
+                        .HasColumnType("int");
+
+                    b.HasKey("BouqetId", "MonoFlowerId");
+
+                    b.HasIndex("MonoFlowerId");
+
+                    b.ToTable("BouqetFlowers");
+                });
 
             modelBuilder.Entity("MvcFlowers.Models.Bouqet", b =>
                 {
@@ -34,18 +52,21 @@ namespace MvcFlowers.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("decimal(18,2)");
+
                     b.HasKey("BouqetId");
 
                     b.ToTable("Bouqet");
                 });
 
-            modelBuilder.Entity("MvcFlowers.Models.Flower", b =>
+            modelBuilder.Entity("MvcFlowers.Models.MonoFlowers", b =>
                 {
-                    b.Property<int>("FlowerId")
+                    b.Property<int>("MonoFlowerId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FlowerId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MonoFlowerId"));
 
                     b.Property<string>("Colour")
                         .HasColumnType("nvarchar(max)");
@@ -57,59 +78,12 @@ namespace MvcFlowers.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
-                    b.HasKey("FlowerId");
-
-                    b.ToTable("Flowers");
-                });
-
-            modelBuilder.Entity("MvcFlowers.Models.FlowerInBouqet", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("BouqetId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Count")
-                        .HasColumnType("int");
-
-                    b.Property<int>("FlowerId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BouqetId");
-
-                    b.HasIndex("FlowerId");
-
-                    b.ToTable("FlowerInBouqet");
-                });
-
-            modelBuilder.Entity("MvcFlowers.Models.Pack", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("Count")
-                        .HasColumnType("int");
-
-                    b.Property<int>("FlowerId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("RecievementDate")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("Id");
+                    b.HasKey("MonoFlowerId");
 
-                    b.HasIndex("FlowerId");
-
-                    b.ToTable("Packs");
+                    b.ToTable("MonoFlowers");
                 });
 
             modelBuilder.Entity("Order", b =>
@@ -143,40 +117,19 @@ namespace MvcFlowers.Migrations
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("MvcFlowers.Models.FlowerInBouqet", b =>
+            modelBuilder.Entity("BouqetFlowers", b =>
                 {
                     b.HasOne("MvcFlowers.Models.Bouqet", null)
-                        .WithMany("Flowers")
-                        .HasForeignKey("BouqetId");
-
-                    b.HasOne("MvcFlowers.Models.Flower", "Flower")
                         .WithMany()
-                        .HasForeignKey("FlowerId")
+                        .HasForeignKey("BouqetId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Flower");
-                });
-
-            modelBuilder.Entity("MvcFlowers.Models.Pack", b =>
-                {
-                    b.HasOne("MvcFlowers.Models.Flower", "Flower")
-                        .WithMany("Packs")
-                        .HasForeignKey("FlowerId")
+                    b.HasOne("MvcFlowers.Models.MonoFlowers", null)
+                        .WithMany()
+                        .HasForeignKey("MonoFlowerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Flower");
-                });
-
-            modelBuilder.Entity("MvcFlowers.Models.Bouqet", b =>
-                {
-                    b.Navigation("Flowers");
-                });
-
-            modelBuilder.Entity("MvcFlowers.Models.Flower", b =>
-                {
-                    b.Navigation("Packs");
                 });
 #pragma warning restore 612, 618
         }

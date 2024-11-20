@@ -24,8 +24,6 @@ namespace MvcFlowers.Controllers
         public async Task<IActionResult> GetOrders()
         {
             var orders = await _context.Orders
-                .Include(o => o.Bouqet)
-                .ThenInclude(b => b.Flowers) // Добавляем это, чтобы загрузить цветы букета
                 .Select(o => new OrderDto
                 {
                     OrderId = o.OrderId,
@@ -33,21 +31,21 @@ namespace MvcFlowers.Controllers
                     Phone = o.Phone,
                     Address = o.Address,
                     BouqetId = o.BouqetId,
-                    TotalPrice = o.Bouqet.CalculateTotalPrice() // Вычисляем стоимость букета
+                    TotalPrice = _context.Bouqet
+                        .Where(b => b.BouqetId == o.BouqetId)
+                        .Select(b => b.CalculateTotalPrice())
+                        .FirstOrDefault() // Вычисляем стоимость букета по BouqetId
                 })
                 .ToListAsync();
 
             return Ok(orders);
         }
 
-
-
-
         // GET: api/Orders/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetOrder(int id)
         {
-            var order = await _context.Orders.Include(o => o.Bouqet).FirstOrDefaultAsync(m => m.OrderId == id);
+            var order = await _context.Orders.FirstOrDefaultAsync(m => m.OrderId == id);
             if (order == null)
             {
                 return NotFound();
@@ -59,13 +57,21 @@ namespace MvcFlowers.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateOrder([FromBody] Order order)
         {
-            if (order == null)
+            if (order == null || order.BouqetId <= 0)
             {
-                return BadRequest();
+                return BadRequest("Order or BouqetId is invalid.");
             }
 
             if (ModelState.IsValid)
             {
+                // Проверьте, существует ли букет
+                var bouqet = await _context.Bouqet.FindAsync(order.BouqetId);
+                if (bouqet == null)
+                {
+                    return NotFound("Bouqet not found.");
+                }
+
+                // Добавьте заказ в контекст
                 _context.Orders.Add(order);
                 await _context.SaveChangesAsync();
                 return CreatedAtAction(nameof(GetOrder), new { id = order.OrderId }, order);

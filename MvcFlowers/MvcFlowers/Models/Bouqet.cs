@@ -12,31 +12,34 @@ namespace MvcFlowers.Models
     {
         [Key]
         public int BouqetId { get; set; }
-        public List<MonoFlowers> Flowers { get; set; } = new List<MonoFlowers>();
+        public List<FlowerInBouqet> Flowers { get; set; } = new List<FlowerInBouqet>();
 
         //[NotMapped]
-        public decimal TotalPrice { get; set; }
+        public decimal TotalPrice => Flowers.Sum(f=> f.Flower.PriceAsInt*f.Count);
         [NotMapped]
-        public int FlowersCount { get; set; }
+        public int FlowersCount => Flowers.Sum(fl => fl.Count);
         public string SelectedFlowerIds { get; set; }
 
         public Bouqet()
         {
-            Flowers = new List<MonoFlowers>();
+            Flowers = new List<FlowerInBouqet>();
         }
 
         // Метод для подсчета стоимости букета
         public decimal CalculateTotalPrice()
         {
-            return Flowers.Sum(flower => flower.Price);
+            return Flowers.Sum(flower => flower.Flower.Price*flower.Count);
         }
-
-        // Метод для подсчета количества цветов в букете
-        public int CountFlowers()
+        public void AddFlowers(Flower f, int count)
         {
-            return Flowers.Count;
+
+        }
+        public void RemoveFlowers(Flower f, int count)
+        {
+
         }
 
+/*
         // Метод для создания букета
         public static async Task<Bouqet> CreateBouquet(MvcFlowersContext context, string selectedFlowerIds)
         {
@@ -52,13 +55,13 @@ namespace MvcFlowers.Models
 
             // Получаем все MonoFlowerId, которые уже существуют в других букете
             var existingFlowerIds = await context.Bouqet
-                .SelectMany(b => b.Flowers.Select(f => f.MonoFlowerId)) // Извлекаем MonoFlowerId
+                .SelectMany(b => b.Flowers.Select(f => f.FlowerId)) // Извлекаем MonoFlowerId
                 .Distinct() // Убираем дубликаты
                 .ToListAsync();
 
             // Извлекаем доступные цветы, которые не существуют в других букете
             bouquet.Flowers = await context.MonoFlowers
-                .Where(f => selectedFlowerIdList.Contains(f.MonoFlowerId) && !existingFlowerIds.Contains(f.MonoFlowerId))
+                .Where(f => selectedFlowerIdList.Contains(f.FlowerId) && !existingFlowerIds.Contains(f.FlowerId))
                 .ToListAsync();
 
             if (!bouquet.Flowers.Any())
@@ -74,13 +77,13 @@ namespace MvcFlowers.Models
             // Извлечение всех MonoFlowerId, которые уже существуют в других букете
             var existingFlowerIds = await context.Bouqet
                 .Where(b => b.BouqetId != bouqet.BouqetId) // Исключаем текущий букет
-                .SelectMany(b => b.Flowers.Select(f => f.MonoFlowerId)) // Извлекаем MonoFlowerId
+                .SelectMany(b => b.Flowers.Select(f => f.FlowerId)) // Извлекаем MonoFlowerId
                 .Distinct() // Убираем дубликаты
                 .ToListAsync();
 
             // Извлечение цветов из базы данных
             var selectedFlowers = await context.MonoFlowers
-                .Where(f => selectedFlowerIds.Contains(f.MonoFlowerId))
+                .Where(f => selectedFlowerIds.Contains(f.FlowerId))
                 .ToListAsync();
 
             var existingBouquet = await context.Bouqet
@@ -96,8 +99,8 @@ namespace MvcFlowers.Models
             foreach (var flower in selectedFlowers)
             {
                 // Добавляем только если цветок не существует в других букете
-                if (!existingBouquet.Flowers.Any(f => f.MonoFlowerId == flower.MonoFlowerId) &&
-                    !existingFlowerIds.Contains(flower.MonoFlowerId))
+                if (!existingBouquet.Flowers.Any(f => f.FlowerId == flower.FlowerId) &&
+                    !existingFlowerIds.Contains(flower.FlowerId))
                 {
                     existingBouquet.Flowers.Add(flower);
                 }
@@ -135,7 +138,7 @@ namespace MvcFlowers.Models
                 throw new InvalidOperationException("Букет не найден.");
             }
 
-            var flowerToRemove = bouqet.Flowers.FirstOrDefault(f => f.MonoFlowerId == flowerId);
+            var flowerToRemove = bouqet.Flowers.FirstOrDefault(f => f.FlowerId == flowerId);
             if (flowerToRemove == null)
             {
                 throw new InvalidOperationException("Цветок не найден в букете.");
@@ -149,12 +152,12 @@ namespace MvcFlowers.Models
             // Получаем все MonoFlowerId, которые уже существуют в других букете
             var existingMonoFlowerIds = await context.Bouqet
                 .Where(b => b.BouqetId != currentBouqetId) // Исключаем текущий букет
-                .SelectMany(b => b.Flowers.Select(f => f.MonoFlowerId)) // Извлекаем MonoFlowerId
+                .SelectMany(b => b.Flowers.Select(f => f.FlowerId)) // Извлекаем MonoFlowerId
                 .Distinct() // Убираем дубликаты
                 .ToListAsync();
 
             return existingMonoFlowerIds;
         }
-
+*/
     }
 }

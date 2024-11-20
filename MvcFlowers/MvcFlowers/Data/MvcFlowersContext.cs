@@ -14,36 +14,40 @@ namespace MvcFlowers.Data
         {
         }
 
-        public DbSet<MvcFlowers.Models.MonoFlowers> MonoFlowers { get; set; } = default!;
+       // public DbSet<MvcFlowers.Models.Flower> Flowers { get; set; } = default!;
         public DbSet<MvcFlowers.Models.Bouqet> Bouqet { get; set; } = default!;
-        public DbSet<MonoFlowers> Flowers { get; set; }
+        public DbSet<Flower> Flowers { get; set; }
+        public DbSet<Pack> Packs { get; set; }
 
         public DbSet<Order> Orders { get; set; }
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-{
-        base.OnModelCreating(modelBuilder);
+        //protected override void OnModelCreating(ModelBuilder modelBuilder)
+        //{
+        //    base.OnModelCreating(modelBuilder);
 
-        // Настройка отношения "многие ко многим" между Bouqet и MonoFlowers
-        modelBuilder.Entity<Bouqet>()
-            .HasMany(b => b.Flowers)
-            .WithMany()
-            .UsingEntity<Dictionary<string, object>>(
-                "BouqetFlowers", // Имя промежуточной таблицы
-                j => j
-                    .HasOne<MonoFlowers>()
-                    .WithMany()
-                    .HasForeignKey("MonoFlowerId")
-                    .OnDelete(DeleteBehavior.Cascade),
-                j => j
-                    .HasOne<Bouqet>()
-                    .WithMany()
-                    .HasForeignKey("BouqetId")
-                    .OnDelete(DeleteBehavior.Cascade),
-                j =>
-                {
-                    j.HasKey("BouqetId", "MonoFlowerId"); // Установка составного ключа
-                });
-}
+        //    modelBuilder.Entity<FlowerInBouqet>().HasNoKey();
+
+        //}
+        //    // Настройка отношения "многие ко многим" между Bouqet и MonoFlowers
+        //    modelBuilder.Entity<Bouqet>()
+        //        .HasMany(b => b.Flowers)
+        //        .WithMany()
+        //        .UsingEntity<Dictionary<string, object>>(
+        //            "BouqetFlowers", // Имя промежуточной таблицы
+        //            j => j
+        //                .HasOne<Flower>()
+        //                .WithMany()
+        //                .HasForeignKey("MonoFlowerId")
+        //                .OnDelete(DeleteBehavior.Cascade),
+        //            j => j
+        //                .HasOne<Bouqet>()
+        //                .WithMany()
+        //                .HasForeignKey("BouqetId")
+        //                .OnDelete(DeleteBehavior.Cascade),
+        //            j =>
+        //            {
+        //                j.HasKey("BouqetId", "MonoFlowerId"); // Установка составного ключа
+        //            });
+        //}
 
     }
 }
