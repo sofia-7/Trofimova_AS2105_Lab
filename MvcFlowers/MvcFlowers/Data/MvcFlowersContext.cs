@@ -9,17 +9,24 @@ namespace MvcFlowers.Data
 {
     public class MvcFlowersContext : DbContext
     {
-        public MvcFlowersContext (DbContextOptions<MvcFlowersContext> options)
+        public MvcFlowersContext(DbContextOptions<MvcFlowersContext> options)
             : base(options)
         {
         }
 
-       // public DbSet<MvcFlowers.Models.Flower> Flowers { get; set; } = default!;
+        // public DbSet<MvcFlowers.Models.Flower> Flowers { get; set; } = default!;
         public DbSet<MvcFlowers.Models.Bouqet> Bouqet { get; set; } = default!;
         public DbSet<Flower> Flowers { get; set; }
         public DbSet<Pack> Packs { get; set; }
-
         public DbSet<Order> Orders { get; set; }
+        public DbSet<FlowerInBouqet> FlowerInBouqets { get; set; }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Flower>()
+                .Property(f => f.Price)
+                .HasColumnType("decimal(18,2)"); //  точность и масштаб
+        }
+
         //protected override void OnModelCreating(ModelBuilder modelBuilder)
         //{
         //    base.OnModelCreating(modelBuilder);

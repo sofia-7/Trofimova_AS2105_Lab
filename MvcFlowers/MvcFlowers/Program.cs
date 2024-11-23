@@ -15,12 +15,12 @@ builder.Services.AddControllers(); // Измените на AddControllers(), ч
 
 var app = builder.Build();
 
-// Инициализация данных
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-    SeedDataMF.Initialize(services);
-}
+//// Инициализация данных
+//using (var scope = app.Services.CreateScope())
+//{
+//    var services = scope.ServiceProvider;
+//    SeedDataMF.Initialize(services);
+//}
 
 // Настройка HTTP-запросов
 if (!app.Environment.IsDevelopment())
